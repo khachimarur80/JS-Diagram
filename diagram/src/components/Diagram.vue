@@ -56,10 +56,18 @@ export default {
       x: 0,
       y: 0,
     },
-    nodes: [],
-    edges: [],
+    nodes: [
+    ],
+    edges: [
+    ],
   }),
   methods : {
+    transformCoord(x, y) {
+      let newX = (x-1) * this.baseTileSize * this.zoom/100 + this.canvas.width/2 + this.offset.x + 1
+      let newY = -(y+1) * this.baseTileSize * this.zoom/100 + this.canvas.height/2 + this.offset.y + 1
+
+      return [newX, newY]
+    },
     startDragging(event) {
       this.isDragging = true;
       this.dragStart = { x: event.clientX, y: event.clientY };
@@ -130,6 +138,106 @@ export default {
         );
       }
     },
+    generateEdges() {
+      console.log('Draw Edges!')
+      for (let i=0; i<this.edges.length; i++) {
+
+        let transformationOrigin = {
+          x: 0,
+          y: 0, 
+        }
+
+        let transformationDestin = {
+          x: 0,
+          y: 0, 
+        }
+
+        if (this.edges[i][0].x < this.edges[i][1].x) {
+          if (this.edges[i][0].y == this.edges[i][1].y) {
+            transformationOrigin.x = .5
+            transformationDestin.x = -.5
+          }
+          else {
+            transformationOrigin.x = 0
+            transformationDestin.x = -.5 
+          }
+        }
+
+        else if (this.edges[i][0].x > this.edges[i][1].x) {
+          if (this.edges[i][0].y == this.edges[i][1].y) {
+            transformationOrigin.x = -.5
+            transformationDestin.x = .5
+          }
+          else {
+            transformationOrigin.x = 0 
+            transformationDestin.x = .5
+          }
+        }
+
+        else {
+          transformationDestin.y = 0
+        }
+
+        if (this.edges[i][0].y > this.edges[i][1].y) {
+          if (this.edges[i][0].x == this.edges[i][1].x) {
+            transformationOrigin.y = -.5
+            transformationDestin.y = .5
+          }
+          else {
+            transformationOrigin.y = -.5
+            transformationDestin.y = 0
+          }
+        }
+
+        else if (this.edges[i][0].y < this.edges[i][1].y) {
+          if (this.edges[i][0].x == this.edges[i][1].x) {
+            transformationOrigin.y = .5
+            transformationDestin.y = -.5
+          }
+          else {
+            transformationOrigin.y = .5
+            transformationDestin.y = 0
+          }
+        }
+
+
+        this.canvas.ctx.beginPath()
+        this.canvas.ctx.moveTo(
+          ... this.transformCoord(
+            this.edges[i][0].x + 1 + transformationOrigin.x,
+            this.edges[i][0].y - 1 + transformationOrigin.y,
+          )
+        )
+        this.canvas.ctx.lineTo(
+          ... this.transformCoord(
+            this.edges[i][0].x + 1 + transformationOrigin.x,
+            this.edges[i][1].y - 1 + transformationDestin.y,
+          )
+        )
+        this.canvas.ctx.strokeStyle = 'blue';
+        this.canvas.ctx.lineWidth = 2;
+        this.canvas.ctx.stroke();
+
+        this.canvas.ctx.beginPath()
+        this.canvas.ctx.moveTo(
+          ... this.transformCoord(
+            this.edges[i][0].x + 1 + transformationOrigin.x,
+            this.edges[i][1].y - 1 + transformationDestin.y,
+          )
+        )
+        this.canvas.ctx.lineTo(
+          ... this.transformCoord(
+            this.edges[i][1].x + 1 + transformationDestin.x,
+            this.edges[i][1].y - 1 + transformationDestin.y,
+          )
+        )
+        this.canvas.ctx.strokeStyle = 'blue';
+        this.canvas.ctx.lineWidth = 2;
+        this.canvas.ctx.stroke();
+
+
+      }
+    },
     generateGrid() {
       let currentTileSize = this.baseTileSize
 
@@ -183,6 +291,7 @@ export default {
 
       this.generateGrid()
       //this.generateAxis()
+      this.generateEdges()
       this.generateNodes()
     },
     createNode(event) {
@@ -200,8 +309,7 @@ export default {
       this.canvas.ctx.lineWidth = 1;
 
       this.canvas.ctx.strokeRect(
-        (x-1) * this.baseTileSize * this.zoom/100 + this.canvas.width/2 + this.offset.x + 1,
-        -(y+1) * this.baseTileSize * this.zoom/100 + this.canvas.height/2 + this.offset.y + 1,
+        ...this.transformCoord(x,y),
         this.baseTileSize * this.zoom/100 - 1,
         this.baseTileSize * this.zoom/100 - 1
       );
@@ -210,13 +318,6 @@ export default {
     }
   },
   mounted() {
-    if (this.treeNode) {
-      this.nodes = this.treeNode.nodes
-      this.edges = this.treeNode.edges
-
-
-
-    }
     this.baseTileSize = Math.ceil((this.minTileSize+this.maxTileSize)/2)
     this.generateBoard()
   },

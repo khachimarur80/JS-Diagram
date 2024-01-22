@@ -45,13 +45,13 @@ export default {
   }),
  
   mounted() {
-    let iteration = 0
-    this.treeNode = this.options[iteration]
+    //let iteration = 0
+    //this.treeNode = this.options[iteration]
 
-    setInterval(()=>{
+    /*setInterval(()=>{
       iteration += 1
-      this.treeNode = this.options[iteration%3]
-    }, 1000)
+      //this.treeNode = this.options[iteration%3]
+    }, 1000)*/
   }
 };
 </script>
