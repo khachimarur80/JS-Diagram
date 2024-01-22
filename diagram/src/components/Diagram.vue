@@ -123,8 +123,8 @@ export default {
         this.canvas.ctx.lineWidth = 2;
 
         this.canvas.ctx.strokeRect(
-          this.nodes[i].x * this.baseTileSize * this.zoom/100 + this.canvas.width/2 + this.offset.x + 1,
-          -this.nodes[i].y * this.baseTileSize * this.zoom/100 + this.canvas.height/2 + this.offset.y + 1,
+          (this.nodes[i].x - .5) * this.baseTileSize * this.zoom/100 + this.canvas.width/2 + this.offset.x + 1,
+          -(this.nodes[i].y+.5) * this.baseTileSize * this.zoom/100 + this.canvas.height/2 + this.offset.y + 1,
           this.baseTileSize * this.zoom/100 - 1,
           this.baseTileSize * this.zoom/100 - 1
         );
@@ -154,23 +154,23 @@ export default {
       for (let i=1; i<=colsNum+1; i++) {
         for (let j=1; j<=rowsNum+1; j++) {
           this.generateTile(
-            i*currentTileSize - currentTileSize/2 + this.offset.x%currentTileSize,
-            j*currentTileSize - currentTileSize/2 + this.offset.y%currentTileSize,
+            i*currentTileSize - currentTileSize + this.offset.x%currentTileSize,
+            j*currentTileSize - currentTileSize + this.offset.y%currentTileSize,
             currentTileSize
           )
           this.generateTile(
-            -(i*currentTileSize - currentTileSize/2) + this.offset.x%currentTileSize,
-            -(j*currentTileSize - currentTileSize/2) + this.offset.y%currentTileSize,
+            -(i*currentTileSize) + this.offset.x%currentTileSize,
+            -(j*currentTileSize) + this.offset.y%currentTileSize,
             currentTileSize
           )
           this.generateTile(
-            -(i*currentTileSize - currentTileSize/2) + this.offset.x%currentTileSize,
-            j*currentTileSize - currentTileSize/2 + this.offset.y%currentTileSize,
+            -(i*currentTileSize) + this.offset.x%currentTileSize,
+            j*currentTileSize - currentTileSize  + this.offset.y%currentTileSize,
             currentTileSize
           )
           this.generateTile(
-            (i*currentTileSize - currentTileSize/2) + this.offset.x%currentTileSize,
-            -(j*currentTileSize - currentTileSize/2) + this.offset.y%currentTileSize,
+            (i*currentTileSize - currentTileSize) + this.offset.x%currentTileSize,
+            -(j*currentTileSize) + this.offset.y%currentTileSize,
             currentTileSize
           )
         }
@@ -182,12 +182,12 @@ export default {
       this.canvas.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
 
       this.generateGrid()
-      this.generateAxis()
+      //this.generateAxis()
       this.generateNodes()
     },
     createNode(event) {
-      let x = Math.floor((event.x  - this.canvas.width/2) / this.currentTileSize)
-      let y = Math.floor((this.canvas.height/2 - event.y + this.currentTileSize/2) / this.currentTileSize)
+      let x = Math.floor((event.x  - this.canvas.width/2 + this.currentTileSize/2) / this.currentTileSize)
+      let y = Math.floor((this.canvas.height/2 - event.y) / this.currentTileSize)
 
       let node = new Node()
 
@@ -200,8 +200,8 @@ export default {
       this.canvas.ctx.lineWidth = 1;
 
       this.canvas.ctx.strokeRect(
-        x * this.baseTileSize * this.zoom/100 + this.canvas.width/2 + this.offset.x + 1,
-        -y * this.baseTileSize * this.zoom/100 + this.canvas.height/2 + this.offset.y + 1,
+        (x-1) * this.baseTileSize * this.zoom/100 + this.canvas.width/2 + this.offset.x + 1,
+        -(y+1) * this.baseTileSize * this.zoom/100 + this.canvas.height/2 + this.offset.y + 1,
         this.baseTileSize * this.zoom/100 - 1,
         this.baseTileSize * this.zoom/100 - 1
       );
